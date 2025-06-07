@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccessCodeRepository extends MongoRepository<AccessCode, String> {
     boolean existsByToken(String token);
+
     AccessCode findAccessCodeByToken(String token);
     AccessCode findAccessCodeByVisitorPhoneNumber(String phoneNumber);
+
+
 }

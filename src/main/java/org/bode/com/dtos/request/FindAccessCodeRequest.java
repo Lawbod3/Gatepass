@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 
 @Data
 public class FindAccessCodeRequest {
-
+    @NotEmpty(message = "Token can not be empty")
     private String token;
     private String visitorPhoneNumber;
 
-    private Boolean active;
+
 
 }

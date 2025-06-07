@@ -1,12 +1,12 @@
 package org.bode.com.services;
 
+import org.bode.com.data.models.AccessCode;
 import org.bode.com.data.repositories.ResidentRepository;
+import org.bode.com.dtos.request.FindAccessCodeRequest;
 import org.bode.com.dtos.request.GenerateAccessCodeRequest;
 import org.bode.com.dtos.request.LoginResidentRequest;
 import org.bode.com.dtos.request.RegisterResidentRequest;
-import org.bode.com.dtos.responses.GenerateAccessCodeResponse;
-import org.bode.com.dtos.responses.RegisterResidentResponse;
-import org.bode.com.dtos.responses.RegisteredLoginResidentResponse;
+import org.bode.com.dtos.responses.*;
 import org.bode.com.exceptions.PasswordException;
 import org.bode.com.exceptions.ResidentDoesNotExistException;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +34,9 @@ ResidentServicesImplTest {
     private RegisteredLoginResidentResponse registeredLoginResponse;
     private GenerateAccessCodeRequest generateAccessCodeRequest;
     private GenerateAccessCodeResponse generateAccessCodeResponse;
+    private FindAccessCodeRequest findAccessCodeRequest;
+    private FindAccessCodeResponse findAccessCodeResponse;
+
 
     @BeforeEach
     public void setUp() {
@@ -64,6 +67,9 @@ ResidentServicesImplTest {
          generateAccessCodeRequest.setResidentEmail("olabode@gmail.com");
          generateAccessCodeRequest.setVisitorFullName("Aloba Humble");
          generateAccessCodeRequest.setVisitorPhoneNumber("2222222222");
+
+         findAccessCodeRequest = new FindAccessCodeRequest();
+
 
 
 
@@ -107,6 +113,21 @@ ResidentServicesImplTest {
         generateAccessCodeResponse = service.generateAccessCode(generateAccessCodeRequest);
         assertEquals("AccessCode generated successfully", generateAccessCodeResponse.getMessage());
 
+    }
+
+    @Test
+    public void testServiceCanFindAccessCode() {
+
+        response = service.register(request);
+        assertEquals("Registered Successfully", response.getMessage());
+        assertTrue(repo.existsByEmail(request.getEmail()));
+        generateAccessCodeResponse = service.generateAccessCode(generateAccessCodeRequest);
+        assertEquals("AccessCode generated successfully", generateAccessCodeResponse.getMessage());
+        findAccessCodeRequest.setToken(generateAccessCodeRequest.getToken());
+
+        findAccessCodeRequest.setVisitorPhoneNumber(generateAccessCodeRequest.getVisitorPhoneNumber());
+       findAccessCodeResponse = service.findAccessCode(findAccessCodeRequest);
+       assertEquals("Access code found", findAccessCodeResponse.getMessage());
     }
 
 

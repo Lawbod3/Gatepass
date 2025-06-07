@@ -11,9 +11,7 @@ import org.bode.com.dtos.request.GenerateAccessCodeRequest;
 import org.bode.com.dtos.request.LoginResidentRequest;
 import org.bode.com.dtos.request.RegisterResidentRequest;
 import org.bode.com.dtos.responses.*;
-import org.bode.com.exceptions.ResidentDoesNotExistException;
-import org.bode.com.exceptions.ResidentExistException;
-import org.bode.com.exceptions.VisitorDoesNotExistException;
+import org.bode.com.exceptions.*;
 import org.bode.com.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,7 +78,12 @@ public class ResidentServiceImpl implements ResidentServices{
 
     @Override
     public FindAccessCodeResponse findAccessCode(FindAccessCodeRequest request) {
-        return null;
+        FindAccessCodeResponse response = new FindAccessCodeResponse();
+        response.setMessage("AccessCode not found");
+        if(accessCodeRepository.existsByToken(request.getToken())) response.setMessage("Access code found");
+        else throw new AccessCodeDoesNotExistException("AccessCode does not exist");
+
+        return response;
     }
 
 }

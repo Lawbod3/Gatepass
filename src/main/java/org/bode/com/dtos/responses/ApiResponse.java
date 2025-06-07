@@ -9,4 +9,8 @@ public class ApiResponse<Object> {
     private boolean success;
     private String message;
     private Object data;
+
+    public ApiResponse() {
+
+    }
 }
