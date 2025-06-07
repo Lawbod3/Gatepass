@@ -17,6 +17,10 @@ public class AccessCode {
     private LocalDate usedDate;
     private LocalDate expirationDate;
     private boolean active;
-    private Visitor visitor;
-    private Resident resident;
+    private String VisitorFullName;
+    private String VisitorPhoneNumber;
+    private String residentPhoneNumber;
+    private String residentAddress;
+
+
 }

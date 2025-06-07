@@ -16,4 +16,5 @@ public class Resident {
     private String password;
 
 
+
 }

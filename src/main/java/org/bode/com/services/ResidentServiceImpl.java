@@ -1,6 +1,8 @@
 package org.bode.com.services;
 
+import org.bode.com.data.models.AccessCode;
 import org.bode.com.data.models.Resident;
+import org.bode.com.data.models.Visitor;
 import org.bode.com.data.repositories.AccessCodeRepository;
 import org.bode.com.data.repositories.ResidentRepository;
 import org.bode.com.data.repositories.VisitorRepository;
@@ -9,10 +11,13 @@ import org.bode.com.dtos.request.GenerateAccessCodeRequest;
 import org.bode.com.dtos.request.LoginResidentRequest;
 import org.bode.com.dtos.request.RegisterResidentRequest;
 import org.bode.com.dtos.responses.*;
-import org.bode.com.exceptions.ExistingResident;
+import org.bode.com.exceptions.ResidentDoesNotExistException;
+import org.bode.com.exceptions.ResidentExistException;
 import org.bode.com.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Random;
 
 @Service
 public class ResidentServiceImpl implements ResidentServices{
@@ -28,7 +33,7 @@ public class ResidentServiceImpl implements ResidentServices{
 
     @Override
     public RegisterResidentResponse register(RegisterResidentRequest request) {
-        if (residentRepository.existsByEmail(request.getEmail())) throw new ExistingResident("Resident already exist");
+        if (residentRepository.existsByEmail(request.getEmail())) throw new ResidentExistException("Resident already exist");
         Resident resident = Mapper.mapToResident(request);
         residentRepository.save(resident);
         return  Mapper.mapToResponse(resident);
@@ -48,4 +53,5 @@ public class ResidentServiceImpl implements ResidentServices{
     public FindAccessCodeResponse findAccessCode(FindAccessCodeRequest request) {
         return null;
     }
+
 }

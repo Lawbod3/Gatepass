@@ -1,19 +1,26 @@
 package org.bode.com.services;
 
 import org.bode.com.data.repositories.ResidentRepository;
+import org.bode.com.dtos.request.GenerateAccessCodeRequest;
 import org.bode.com.dtos.request.LoginResidentRequest;
 import org.bode.com.dtos.request.RegisterResidentRequest;
+import org.bode.com.dtos.responses.GenerateAccessCodeResponse;
 import org.bode.com.dtos.responses.RegisterResidentResponse;
 import org.bode.com.dtos.responses.RegisteredLoginResidentResponse;
+import org.bode.com.exceptions.PasswordException;
+import org.bode.com.exceptions.ResidentDoesNotExistException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-public class ResidentServicesImplTest {
+public class
+ResidentServicesImplTest {
     @Autowired
     private ResidentRepository repo;
     @Autowired
@@ -22,6 +29,8 @@ public class ResidentServicesImplTest {
     private RegisterResidentRequest request;
     private RegisterResidentResponse response;
     private LoginResidentRequest loginRequest;
+    private LoginResidentRequest wrongRequest;
+    private LoginResidentRequest loginWrongPassword;
     private RegisteredLoginResidentResponse registeredLoginResponse;
 
     @BeforeEach
@@ -39,7 +48,16 @@ public class ResidentServicesImplTest {
          loginRequest.setEmail("olabode@gmail.com");
          loginRequest.setPassword("password");
 
+         wrongRequest = new LoginResidentRequest();
+         wrongRequest.setEmail("bode@gmail.com");
+         wrongRequest.setPassword("password");
+
+         loginWrongPassword = new LoginResidentRequest();
+         loginWrongPassword.setEmail("olabode@gmail.com");
+         loginWrongPassword.setPassword("wrongPassword");
+
          registeredLoginResponse = new RegisteredLoginResidentResponse();
+
 
 
     }
@@ -58,6 +76,21 @@ public class ResidentServicesImplTest {
         registeredLoginResponse = service.login(loginRequest);
         assertEquals("Login Successfully", registeredLoginResponse.getMessage());
 
-
     }
+
+    @Test
+    public void testServiceCanThrowExceptionForLoginEmail() {
+        response = service.register(request);
+        assertEquals("Registered Successfully", response.getMessage());
+       assertThrows(ResidentDoesNotExistException.class, () -> service.login(wrongRequest));
+    }
+
+    @Test
+    public void testServiceCanThrowExceptionForLoginPassword() {
+        response = service.register(request);
+        assertEquals("Registered Successfully", response.getMessage());
+        assertThrows(PasswordException.class, () -> service.login(loginWrongPassword));
+    }
+
+
 }

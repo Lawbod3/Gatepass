@@ -8,7 +8,8 @@ import java.time.LocalDate;
 @Data
 public class FindAccessCodeResponse {
     private String token;
-    private String visitorId;
+    private String visitorPhoneNumber;
+    private String VisitorFullName;
     private LocalDate creationDate;
     private LocalDate expirationDate;
     private LocalDate usedDate;
