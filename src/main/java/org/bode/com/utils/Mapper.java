@@ -47,14 +47,26 @@ public class Mapper {
 
     public static RegisteredLoginResidentResponse mapToRegisteredLoginResidentResponse(LoginResidentRequest loginRequest, ResidentRepository residentRepository) {
         RegisteredLoginResidentResponse registerResidentResponse = new RegisteredLoginResidentResponse();
-        if(residentRepository.existsByEmail(loginRequest.getEmail())) {
-            Resident resident = residentRepository.findByEmail(loginRequest.getEmail());
+
+            Resident resident = residentRepository.findByEmail(loginRequest.getEmail())
+                    .orElseThrow(() -> new ResidentDoesNotExistException("Resident not found"));
             if(resident.getPassword().equals(loginRequest.getPassword())) registerResidentResponse.setMessage("Login Successfully");
             else throw new PasswordException("Wrong password");
-        }
-        else throw new ResidentDoesNotExistException("Email not found");
+
        return registerResidentResponse;
     }
+
+    public static AccessCode mapToAccessCode(GenerateAccessCodeRequest request, Resident resident, Visitor visitor) {
+        AccessCode accessCode = new AccessCode();
+        accessCode.setCreationDate(request.getIssuedDate());
+        accessCode.setExpirationDate(request.getExpirationDate());
+        accessCode.setVisitor(visitor);
+        accessCode.setActive(true);
+        accessCode.setResidentPhoneNumber(resident.getPhoneNumber());
+        return accessCode;
+    }
+
+
 
 
 

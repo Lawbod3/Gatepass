@@ -5,11 +5,13 @@ import org.bode.com.data.models.Resident;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ResidentRepository  extends MongoRepository<Resident, Long> {
 
 
 
-    Resident findByEmail(String email);
+   Optional< Resident> findByEmail(String email);
       boolean existsByEmail(String email);
 }

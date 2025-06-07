@@ -13,6 +13,7 @@ import org.bode.com.dtos.request.RegisterResidentRequest;
 import org.bode.com.dtos.responses.*;
 import org.bode.com.exceptions.ResidentDoesNotExistException;
 import org.bode.com.exceptions.ResidentExistException;
+import org.bode.com.exceptions.VisitorDoesNotExistException;
 import org.bode.com.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,35 @@ public class ResidentServiceImpl implements ResidentServices{
 
     @Override
     public GenerateAccessCodeResponse generateAccessCode(GenerateAccessCodeRequest request) {
-        return null;
+        GenerateAccessCodeResponse response = new GenerateAccessCodeResponse();
+        Resident resident = residentRepository.findByEmail(request.getResidentEmail())
+                .orElseThrow(() -> new ResidentDoesNotExistException("Resident does not exist"));
+        
+        Visitor visitor = new Visitor();
+        visitor.setPhoneNumber(request.getVisitorPhoneNumber());
+        visitor.setFullName(request.getVisitorFullName());
+        if(!visitorRepository.existsByPhoneNumber(visitor.getPhoneNumber())) visitorRepository.save(visitor);
+        else visitor = visitorRepository.findByPhoneNumber(visitor.getId()).
+                orElseThrow(() -> new VisitorDoesNotExistException("Visitor does not exist"));
+        
+        AccessCode accessCode = Mapper.mapToAccessCode(request, resident, visitor);
+        accessCode.setToken(generateToken());
+        accessCodeRepository.save(accessCode);
+        response.setMessage("AccessCode generated successfully");
+
+        return response;
+    }
+
+    private String generateToken() {
+        String otp = "";
+        for (int count = 0; count < 5; count++) {
+            char[] chars = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+            Random rand = new Random();
+            int randomNumber = rand.nextInt(10);
+            otp += chars[randomNumber];
+
+        }
+        return otp;
     }
 
     @Override

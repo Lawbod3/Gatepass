@@ -32,6 +32,8 @@ ResidentServicesImplTest {
     private LoginResidentRequest wrongRequest;
     private LoginResidentRequest loginWrongPassword;
     private RegisteredLoginResidentResponse registeredLoginResponse;
+    private GenerateAccessCodeRequest generateAccessCodeRequest;
+    private GenerateAccessCodeResponse generateAccessCodeResponse;
 
     @BeforeEach
     public void setUp() {
@@ -57,6 +59,11 @@ ResidentServicesImplTest {
          loginWrongPassword.setPassword("wrongPassword");
 
          registeredLoginResponse = new RegisteredLoginResidentResponse();
+
+         generateAccessCodeRequest = new GenerateAccessCodeRequest();
+         generateAccessCodeRequest.setResidentEmail("olabode@gmail.com");
+         generateAccessCodeRequest.setVisitorFullName("Aloba Humble");
+         generateAccessCodeRequest.setVisitorPhoneNumber("2222222222");
 
 
 
@@ -90,6 +97,16 @@ ResidentServicesImplTest {
         response = service.register(request);
         assertEquals("Registered Successfully", response.getMessage());
         assertThrows(PasswordException.class, () -> service.login(loginWrongPassword));
+    }
+
+    @Test
+    public void testServiceCanGenerateAccessCode() {
+        response = service.register(request);
+        assertEquals("Registered Successfully", response.getMessage());
+        assertTrue(repo.existsByEmail(request.getEmail()));
+        generateAccessCodeResponse = service.generateAccessCode(generateAccessCodeRequest);
+        assertEquals("AccessCode generated successfully", generateAccessCodeResponse.getMessage());
+
     }
 
 
