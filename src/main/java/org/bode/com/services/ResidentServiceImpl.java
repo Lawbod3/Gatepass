@@ -82,7 +82,6 @@ public class ResidentServiceImpl implements ResidentServices{
         response.setMessage("AccessCode not found");
         if(accessCodeRepository.existsByToken(request.getToken())) response.setMessage("Access code found");
         else throw new AccessCodeDoesNotExistException("AccessCode does not exist");
-
         return response;
     }
 
