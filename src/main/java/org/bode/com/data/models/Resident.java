@@ -13,6 +13,7 @@ public class Resident {
     private String phoneNumber;
     private String address;
     private String email;
+    private String password;
 
 
 }

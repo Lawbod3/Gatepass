@@ -29,14 +29,14 @@ public class ResidentServiceImpl implements ResidentServices{
     @Override
     public RegisterResidentResponse register(RegisterResidentRequest request) {
         if (residentRepository.existsByEmail(request.getEmail())) throw new ExistingResident("Resident already exist");
-        Resident resident = Mapper.map(request);
+        Resident resident = Mapper.mapToResident(request);
         residentRepository.save(resident);
-        return  Mapper.map(resident);
+        return  Mapper.mapToResponse(resident);
     }
 
     @Override
     public RegisteredLoginResidentResponse login(LoginResidentRequest loginRequest) {
-        return null;
+        return Mapper.mapToRegisteredLoginResidentResponse(loginRequest, residentRepository);
     }
 
     @Override

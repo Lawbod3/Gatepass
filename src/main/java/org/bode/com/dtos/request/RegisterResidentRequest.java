@@ -17,5 +17,8 @@ public class RegisterResidentRequest {
     private String address;
     @Email(message = "Invalid email format")
     private String email;
+    @NotEmpty(message = "Password cant be empty")
+    @Size(max = 50, message = "Password can not exceed 50 characters")
+    private String password;
 
 }

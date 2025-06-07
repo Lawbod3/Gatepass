@@ -9,4 +9,5 @@ public class RegisterResidentResponse {
     private String email;
     private String phoneNumber;
     private String message;
+    private String id;
 }
