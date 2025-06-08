@@ -30,6 +30,8 @@ public class ResidentServiceImpl implements ResidentServices{
     private VisitorRepository visitorRepository;
 
 
+
+
     @Override
     public RegisterResidentResponse register(RegisterResidentRequest request) {
         if (residentRepository.existsByEmail(request.getEmail())) throw new ResidentExistException("Resident already exist");
@@ -60,6 +62,7 @@ public class ResidentServiceImpl implements ResidentServices{
         accessCode.setToken(generateToken());
         accessCodeRepository.save(accessCode);
         response.setMessage("AccessCode generated successfully");
+        Mapper.mapAccessCodeToResponse(accessCode, response);
 
         return response;
     }
@@ -80,7 +83,11 @@ public class ResidentServiceImpl implements ResidentServices{
     public FindAccessCodeResponse findAccessCode(FindAccessCodeRequest request) {
         FindAccessCodeResponse response = new FindAccessCodeResponse();
         response.setMessage("AccessCode not found");
-        if(accessCodeRepository.existsByToken(request.getToken())) response.setMessage("Access code found");
+        if(accessCodeRepository.existsByToken(request.getToken())){
+            AccessCode accessCode = accessCodeRepository.findAccessCodeByToken(request.getToken());
+            response.setMessage("Access code found");
+            Mapper.mapAccessCodeToResponse(accessCode, response);
+        }
         else throw new AccessCodeDoesNotExistException("AccessCode does not exist");
         return response;
     }

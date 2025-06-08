@@ -10,6 +10,7 @@ import org.bode.com.data.repositories.VisitorRepository;
 import org.bode.com.dtos.request.GenerateAccessCodeRequest;
 import org.bode.com.dtos.request.LoginResidentRequest;
 import org.bode.com.dtos.request.RegisterResidentRequest;
+import org.bode.com.dtos.responses.FindAccessCodeResponse;
 import org.bode.com.dtos.responses.GenerateAccessCodeResponse;
 import org.bode.com.dtos.responses.RegisterResidentResponse;
 import org.bode.com.dtos.responses.RegisteredLoginResidentResponse;
@@ -52,6 +53,11 @@ public class Mapper {
                     .orElseThrow(() -> new ResidentDoesNotExistException("Resident not found"));
             if(resident.getPassword().equals(loginRequest.getPassword())) registerResidentResponse.setMessage("Login Successfully");
             else throw new PasswordException("Wrong password");
+            registerResidentResponse.setEmail(resident.getEmail());
+            registerResidentResponse.setAddress(resident.getAddress());
+            registerResidentResponse.setPhoneNumber(resident.getPhoneNumber());
+            registerResidentResponse.setId(String.valueOf(resident.getId()));
+            registerResidentResponse.setFullName(resident.getFullName());
 
        return registerResidentResponse;
     }
@@ -64,6 +70,28 @@ public class Mapper {
         accessCode.setActive(true);
         accessCode.setResidentPhoneNumber(resident.getPhoneNumber());
         return accessCode;
+    }
+
+    public static void mapAccessCodeToResponse(AccessCode accessCode, FindAccessCodeResponse response) {
+        response.setId(String.valueOf(accessCode.getId()));
+        response.setActive(accessCode.isActive());
+        response.setResidentPhoneNumber(accessCode.getResidentPhoneNumber());
+        response.setVisitor(accessCode.getVisitor());
+        response.setCreationDate(accessCode.getCreationDate());
+        response.setExpirationDate(accessCode.getExpirationDate());
+        response.setUsedDate(accessCode.getUsedDate());
+        response.setToken(accessCode.getToken());
+    }
+
+    public static void mapAccessCodeToResponse(AccessCode accessCode, GenerateAccessCodeResponse response) {
+        response.setId(String.valueOf(accessCode.getId()));
+        response.setActive(accessCode.isActive());
+        response.setResidentPhoneNumber(accessCode.getResidentPhoneNumber());
+        response.setVisitor(accessCode.getVisitor());
+        response.setCreationDate(accessCode.getCreationDate());
+        response.setExpirationDate(accessCode.getExpirationDate());
+        response.setUsedDate(accessCode.getUsedDate());
+        response.setToken(accessCode.getToken());
     }
 
 

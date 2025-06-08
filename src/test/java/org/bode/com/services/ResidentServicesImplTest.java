@@ -1,12 +1,13 @@
 package org.bode.com.services;
 
-import org.bode.com.data.models.AccessCode;
+
 import org.bode.com.data.repositories.ResidentRepository;
 import org.bode.com.dtos.request.FindAccessCodeRequest;
 import org.bode.com.dtos.request.GenerateAccessCodeRequest;
 import org.bode.com.dtos.request.LoginResidentRequest;
 import org.bode.com.dtos.request.RegisterResidentRequest;
 import org.bode.com.dtos.responses.*;
+import org.bode.com.exceptions.AccessCodeDoesNotExistException;
 import org.bode.com.exceptions.PasswordException;
 import org.bode.com.exceptions.ResidentDoesNotExistException;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,17 +118,28 @@ ResidentServicesImplTest {
 
     @Test
     public void testServiceCanFindAccessCode() {
-
         response = service.register(request);
         assertEquals("Registered Successfully", response.getMessage());
         assertTrue(repo.existsByEmail(request.getEmail()));
         generateAccessCodeResponse = service.generateAccessCode(generateAccessCodeRequest);
         assertEquals("AccessCode generated successfully", generateAccessCodeResponse.getMessage());
         findAccessCodeRequest.setToken(generateAccessCodeRequest.getToken());
-
         findAccessCodeRequest.setVisitorPhoneNumber(generateAccessCodeRequest.getVisitorPhoneNumber());
        findAccessCodeResponse = service.findAccessCode(findAccessCodeRequest);
        assertEquals("Access code found", findAccessCodeResponse.getMessage());
+    }
+
+    @Test
+    public void testServiceFindAccessCodeThrowException() {
+        response = service.register(request);
+        assertEquals("Registered Successfully", response.getMessage());
+        assertTrue(repo.existsByEmail(request.getEmail()));
+        generateAccessCodeResponse = service.generateAccessCode(generateAccessCodeRequest);
+        assertEquals("AccessCode generated successfully", generateAccessCodeResponse.getMessage());
+        findAccessCodeRequest.setToken("");
+        findAccessCodeRequest.setVisitorPhoneNumber(generateAccessCodeRequest.getVisitorPhoneNumber());
+        assertThrows(AccessCodeDoesNotExistException.class, () -> service.findAccessCode(findAccessCodeRequest));
+
     }
 
 
