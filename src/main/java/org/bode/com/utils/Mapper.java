@@ -96,6 +96,7 @@ public class Mapper {
     public static void mapToRequestException(GenerateAccessCodeRequest request) {
         if(request.getVisitorPhoneNumber().isEmpty()) throw new ValidationException("Visitor phone number is empty");
         if(request.getVisitorFullName().isEmpty()) throw new ValidationException("Visitor full name is empty");
+        if(request.getResidentEmail().isEmpty()) throw new ValidationException("Resident email is empty");
     }
 
 

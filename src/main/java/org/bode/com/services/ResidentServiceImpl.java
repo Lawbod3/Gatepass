@@ -97,16 +97,14 @@ public class ResidentServiceImpl implements ResidentServices{
 
     @Override
     public FindAccessCodeResponse findAccessCode(FindAccessCodeRequest request) {
-        if (!accessCodeRepository.existsByToken(request.getToken())) {
-            throw new AccessCodeDoesNotExistException("AccessCode does not exist");
-        }
-
-        AccessCode accessCode = accessCodeRepository.findAccessCodeByToken(request.getToken());
         FindAccessCodeResponse response = new FindAccessCodeResponse();
-        response.setMessage("Access code found");
-        Mapper.mapAccessCodeToResponse(accessCode, response);
+        if (!accessCodeRepository.existsByToken(request.getToken())) throw new AccessCodeDoesNotExistException("AccessCode does not exist");
+        else {
+            AccessCode accessCode = accessCodeRepository.findAccessCodeByToken(request.getToken());
+            response.setMessage("Access code found");
+            Mapper.mapAccessCodeToResponse(accessCode, response);
+        }
         return response;
-
     }
 
 }

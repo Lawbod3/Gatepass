@@ -42,10 +42,8 @@ public class AccessCodeController {
     }
 
     @GetMapping("/find-access-code")
-    public ResponseEntity<?> findAccessCode(@RequestParam("token") String token) {
+    public ResponseEntity<?> findAccessCode(@Valid @RequestBody FindAccessCodeRequest findAccessCodeRequest) {
         try{
-            FindAccessCodeRequest findAccessCodeRequest = new FindAccessCodeRequest();
-            findAccessCodeRequest.setToken(token);
 
             FindAccessCodeResponse findAccessCodeResponse = residentServices.findAccessCode(findAccessCodeRequest);
             return new ResponseEntity<>(new ApiResponse(true, findAccessCodeResponse), HttpStatus.OK);
@@ -74,5 +72,6 @@ public class AccessCodeController {
         String message = "Invalid request body";
         return createErrorResponse(new Exception(message), HttpStatus.BAD_REQUEST);
     }
+
 
 }
