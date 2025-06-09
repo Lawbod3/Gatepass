@@ -16,8 +16,10 @@ import org.bode.com.dtos.responses.RegisterResidentResponse;
 import org.bode.com.dtos.responses.RegisteredLoginResidentResponse;
 import org.bode.com.exceptions.PasswordException;
 import org.bode.com.exceptions.ResidentDoesNotExistException;
+import org.bode.com.exceptions.ValidationException;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Random;
 
 
@@ -91,6 +93,10 @@ public class Mapper {
         response.setToken(accessCode.getToken());
     }
 
+    public static void mapToRequestException(GenerateAccessCodeRequest request) {
+        if(request.getVisitorPhoneNumber().isEmpty()) throw new ValidationException("Visitor phone number is empty");
+        if(request.getVisitorFullName().isEmpty()) throw new ValidationException("Visitor full name is empty");
+    }
 
 
 

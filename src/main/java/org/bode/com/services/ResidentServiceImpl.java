@@ -56,6 +56,7 @@ public class ResidentServiceImpl implements ResidentServices{
 
     @Override
     public GenerateAccessCodeResponse generateAccessCode(GenerateAccessCodeRequest request) {
+        Mapper.mapToRequestException(request);
         GenerateAccessCodeResponse response = new GenerateAccessCodeResponse();
         Resident resident = residentRepository.findByEmail(request.getResidentEmail())
                 .orElseThrow(() -> new ResidentDoesNotExistException("Resident does not exist"));
