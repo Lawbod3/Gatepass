@@ -35,14 +35,23 @@ public class ResidentServiceImpl implements ResidentServices{
     @Override
     public RegisterResidentResponse register(RegisterResidentRequest request) {
         if (residentRepository.existsByEmail(request.getEmail())) throw new ResidentExistException("Resident already exist");
-        Resident resident = Mapper.mapToResident(request);
-        residentRepository.save(resident);
-        return  Mapper.mapToResponse(resident);
+        else {
+            Resident resident = Mapper.mapToResident(request);
+            residentRepository.save(resident);
+            return Mapper.mapToResponse(resident);
+        }
     }
 
     @Override
     public RegisteredLoginResidentResponse login(LoginResidentRequest loginRequest) {
-        return Mapper.mapToRegisteredLoginResidentResponse(loginRequest, residentRepository);
+        Resident resident = residentRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new ResidentDoesNotExistException("Resident not found"));
+        if(resident.getPassword().equals(loginRequest.getPassword())) {
+            return Mapper.mapToRegisteredLoginResidentResponse(resident);
+        }
+        else throw new PasswordException("Wrong password");
+
+
     }
 
     @Override
@@ -50,15 +59,21 @@ public class ResidentServiceImpl implements ResidentServices{
         GenerateAccessCodeResponse response = new GenerateAccessCodeResponse();
         Resident resident = residentRepository.findByEmail(request.getResidentEmail())
                 .orElseThrow(() -> new ResidentDoesNotExistException("Resident does not exist"));
-        
+
         Visitor visitor = new Visitor();
+        AccessCode accessCode = Mapper.mapToAccessCode(resident);
+    if(!visitorRepository.existsByPhoneNumber(request.getVisitorPhoneNumber())) {
+
         visitor.setPhoneNumber(request.getVisitorPhoneNumber());
         visitor.setFullName(request.getVisitorFullName());
-        if(!visitorRepository.existsByPhoneNumber(visitor.getPhoneNumber())) visitorRepository.save(visitor);
-        else visitor = visitorRepository.findByPhoneNumber(visitor.getId()).
-                orElseThrow(() -> new VisitorDoesNotExistException("Visitor does not exist"));
-        
-        AccessCode accessCode = Mapper.mapToAccessCode(request, resident, visitor);
+        visitorRepository.save(visitor);
+        accessCode.setVisitor(visitor);
+        }
+        else {
+            visitor = visitorRepository.findByPhoneNumber(request.getVisitorPhoneNumber()).get();
+        accessCode.setVisitor(visitor);
+        }
+        if(!visitor.getFullName().equals(request.getVisitorFullName())) throw new GatePassException("Visitor phone number assigned to another name");
         accessCode.setToken(generateToken());
         accessCodeRepository.save(accessCode);
         response.setMessage("AccessCode generated successfully");
@@ -81,15 +96,16 @@ public class ResidentServiceImpl implements ResidentServices{
 
     @Override
     public FindAccessCodeResponse findAccessCode(FindAccessCodeRequest request) {
-        FindAccessCodeResponse response = new FindAccessCodeResponse();
-        response.setMessage("AccessCode not found");
-        if(accessCodeRepository.existsByToken(request.getToken())){
-            AccessCode accessCode = accessCodeRepository.findAccessCodeByToken(request.getToken());
-            response.setMessage("Access code found");
-            Mapper.mapAccessCodeToResponse(accessCode, response);
+        if (!accessCodeRepository.existsByToken(request.getToken())) {
+            throw new AccessCodeDoesNotExistException("AccessCode does not exist");
         }
-        else throw new AccessCodeDoesNotExistException("AccessCode does not exist");
+
+        AccessCode accessCode = accessCodeRepository.findAccessCodeByToken(request.getToken());
+        FindAccessCodeResponse response = new FindAccessCodeResponse();
+        response.setMessage("Access code found");
+        Mapper.mapAccessCodeToResponse(accessCode, response);
         return response;
+
     }
 
 }

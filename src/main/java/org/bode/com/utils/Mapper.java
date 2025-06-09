@@ -17,6 +17,7 @@ import org.bode.com.dtos.responses.RegisteredLoginResidentResponse;
 import org.bode.com.exceptions.PasswordException;
 import org.bode.com.exceptions.ResidentDoesNotExistException;
 
+import java.time.LocalDate;
 import java.util.Random;
 
 
@@ -46,34 +47,30 @@ public class Mapper {
         return registerResidentResponse;
     }
 
-    public static RegisteredLoginResidentResponse mapToRegisteredLoginResidentResponse(LoginResidentRequest loginRequest, ResidentRepository residentRepository) {
+    public static RegisteredLoginResidentResponse mapToRegisteredLoginResidentResponse(Resident resident) {
         RegisteredLoginResidentResponse registerResidentResponse = new RegisteredLoginResidentResponse();
+                registerResidentResponse.setMessage("Login Successfully");
+                registerResidentResponse.setEmail(resident.getEmail());
+                registerResidentResponse.setAddress(resident.getAddress());
+                registerResidentResponse.setPhoneNumber(resident.getPhoneNumber());
+                registerResidentResponse.setId(String.valueOf(resident.getId()));
+                registerResidentResponse.setFullName(resident.getFullName());
 
-            Resident resident = residentRepository.findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new ResidentDoesNotExistException("Resident not found"));
-            if(resident.getPassword().equals(loginRequest.getPassword())) registerResidentResponse.setMessage("Login Successfully");
-            else throw new PasswordException("Wrong password");
-            registerResidentResponse.setEmail(resident.getEmail());
-            registerResidentResponse.setAddress(resident.getAddress());
-            registerResidentResponse.setPhoneNumber(resident.getPhoneNumber());
-            registerResidentResponse.setId(String.valueOf(resident.getId()));
-            registerResidentResponse.setFullName(resident.getFullName());
+            return registerResidentResponse;
 
-       return registerResidentResponse;
     }
 
-    public static AccessCode mapToAccessCode(GenerateAccessCodeRequest request, Resident resident, Visitor visitor) {
+    public static AccessCode mapToAccessCode( Resident resident) {
         AccessCode accessCode = new AccessCode();
-        accessCode.setCreationDate(request.getIssuedDate());
-        accessCode.setExpirationDate(request.getExpirationDate());
-        accessCode.setVisitor(visitor);
+        accessCode.setCreationDate(LocalDate.now());
+        accessCode.setExpirationDate(LocalDate.now().plusDays(7));
         accessCode.setActive(true);
         accessCode.setResidentPhoneNumber(resident.getPhoneNumber());
         return accessCode;
     }
 
     public static void mapAccessCodeToResponse(AccessCode accessCode, FindAccessCodeResponse response) {
-        response.setId(String.valueOf(accessCode.getId()));
+        response.setId(accessCode.getId());
         response.setActive(accessCode.isActive());
         response.setResidentPhoneNumber(accessCode.getResidentPhoneNumber());
         response.setVisitor(accessCode.getVisitor());

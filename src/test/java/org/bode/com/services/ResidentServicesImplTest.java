@@ -66,8 +66,8 @@ ResidentServicesImplTest {
 
          generateAccessCodeRequest = new GenerateAccessCodeRequest();
          generateAccessCodeRequest.setResidentEmail("olabode@gmail.com");
-         generateAccessCodeRequest.setVisitorFullName("Aloba Humble");
-         generateAccessCodeRequest.setVisitorPhoneNumber("2222222222");
+         generateAccessCodeRequest.setVisitorFullName("me Humble");
+         generateAccessCodeRequest.setVisitorPhoneNumber("3333222222");
 
          findAccessCodeRequest = new FindAccessCodeRequest();
 
@@ -123,8 +123,8 @@ ResidentServicesImplTest {
         assertTrue(repo.existsByEmail(request.getEmail()));
         generateAccessCodeResponse = service.generateAccessCode(generateAccessCodeRequest);
         assertEquals("AccessCode generated successfully", generateAccessCodeResponse.getMessage());
-        findAccessCodeRequest.setToken(generateAccessCodeRequest.getToken());
-        findAccessCodeRequest.setVisitorPhoneNumber(generateAccessCodeRequest.getVisitorPhoneNumber());
+        findAccessCodeRequest.setToken(generateAccessCodeResponse.getToken());
+        //findAccessCodeRequest.setVisitorPhoneNumber(generateAccessCodeRequest.getVisitorPhoneNumber());
        findAccessCodeResponse = service.findAccessCode(findAccessCodeRequest);
        assertEquals("Access code found", findAccessCodeResponse.getMessage());
     }
@@ -137,7 +137,7 @@ ResidentServicesImplTest {
         generateAccessCodeResponse = service.generateAccessCode(generateAccessCodeRequest);
         assertEquals("AccessCode generated successfully", generateAccessCodeResponse.getMessage());
         findAccessCodeRequest.setToken("");
-        findAccessCodeRequest.setVisitorPhoneNumber(generateAccessCodeRequest.getVisitorPhoneNumber());
+        //findAccessCodeRequest.setVisitorPhoneNumber(generateAccessCodeRequest.getVisitorPhoneNumber());
         assertThrows(AccessCodeDoesNotExistException.class, () -> service.findAccessCode(findAccessCodeRequest));
 
     }
